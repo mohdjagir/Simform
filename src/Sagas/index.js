@@ -4,29 +4,32 @@ import * as Actions from '../Actions/index';
 import { showMessage } from '../Utils/Alert';
 import VideoModel from '../Models/Video';
 import StripsModel from '../Models/Strips';
+import userLoginModel from '../Models/Login';
 
-export function* userLoginFunc() {
-    yield put(Actions.userLoginRequest());
-    const userSuccess = {
-        statusCode: 200,
-        message: "You are successfully login"
-    }
-    if (userSuccess) {
-        yield put(Actions.userLogiinSuccess(userSuccess));
+export function* userLoginFun(action) {
+    yield put(Actions.userLoginStarted());
+    const responseObj = yield userLoginModel.userLoginRequest(action.requestBody);
+    if (responseObj.statusCode === 200 || responseObj.statusCode === 201) {
+        yield put(Actions.userLoginSuccess(responseObj.data));
     } else {
         showMessage(true, "There is some error !")
-        yield put(Actions.userLogiinFailure())
+        if (responseObj.data && responseObj.data.message) {
+            showMessage(true, responseObj.data.message)
+        } else {
+            showMessage(true, "There is some error !")
+        }
+        yield put(Actions.videoFetchFailure())
     }
 
 }
 export function* fetchVideoFunc() {
-    yield put(Actions.videoFetchRequest());
-    const videoFetchResponse = VideoModel.getVideoList();
-    if (videoFetchResponse.statusCode === 200 || videoFetchResponse.statusCode === 201) {
-        yield put(Actions.videoFetchSuccess(videoFetchResponse));
+    yield put(Actions.videoFetchStarted());
+    const responseObj = yield VideoModel.getVideoList();
+    if (responseObj.statusCode === 200 || responseObj.statusCode == 201) {
+        yield put(Actions.videoFetchSuccess(responseObj.data));
     } else {
-        if (videoFetchResponse.data && videoFetchResponse.data.message) {
-            showMessage(true, videoFetchResponse.data.message)
+        if (responseObj.data && responseObj.data.message) {
+            showMessage(true, responseObj.data.message)
         } else {
             showMessage(true, "There is some error !")
         }
@@ -35,13 +38,13 @@ export function* fetchVideoFunc() {
 
 }
 export function* fetchStipsFunc() {
-    yield put(Actions.stripsFetchRequest());
-    const stripsFetchResponse = StripsModel.getStripsList();
-    if (stripsFetchResponse.statusCode === 200 || stripsFetchResponse.statusCode === 201) {
-        yield put(Actions.stripsFetchSuccess(stripsFetchResponse));
+    yield put(Actions.stripsFetchStarted());
+    const responseObj = yield StripsModel.getStripsList();
+    if (responseObj.statusCode === 200 || responseObj.statusCode === 201) {
+        yield put(Actions.stripsFetchSuccess(responseObj.data));
     } else {
-        if (stripsFetchResponse.data && stripsFetchResponse.data.message) {
-            showMessage(true, stripsFetchResponse.data.message)
+        if (responseObj.data && responseObj.data.message) {
+            showMessage(true, responseObj.data.message)
         } else {
             showMessage(true, "There is some error !")
         }
@@ -51,7 +54,7 @@ export function* fetchStipsFunc() {
 }
 
 export function* actionWatcher() {
-    yield takeLatest(ActionTypes.USER_LOGIN_REQUEST, userLoginFunc)
+    yield takeLatest(ActionTypes.USER_LOGIN_REQUEST, userLoginFun)
     yield takeLatest(ActionTypes.VIDEO_FETCH_REQUEST, fetchVideoFunc)
     yield takeLatest(ActionTypes.STRIPS_FETCH_REQUEST, fetchStipsFunc)
 }

@@ -10,27 +10,27 @@ export const initialState = Immutable.from({
         loading: false,
         videoData: null
     },
-    stripsList: {
+    fetchChemical: {
         loading: false,
-        stripsData: null
+        fetchChemicalData: null
     }
 });
 
 /***user login reducer */
 const userLoginStarted = (state) => state.merge({
-    userLoginData: state.userLoginData.merge({
+    userLogin: state.userLogin.merge({
         userData: initialState.userData,
         loading: true
     })
 })
 const userLoginSuccess = (state, response) => state.merge({
-    userLoginData: state.userLoginData.merge({
+    userLogin: state.userLogin.merge({
         userData: response,
         loading: false
     })
 })
 const userLoginFailure = (state) => state.merge({
-    userLoginData: state.userLoginData.merge({
+    userLogin: state.userLogin.merge({
         userData: initialState.userData,
         loading: false
     })
@@ -57,20 +57,20 @@ const videoFetchFailure = (state) => state.merge({
 })
 /***strips reducers */
 const stripsFetchStarted = (state) => state.merge({
-    stripsList: state.stripsList.merge({
-        stripsData: initialState.stripsData,
+    fetchChemical: state.fetchChemical.merge({
+        fetchChemicalData: initialState.fetchChemicalData,
         loading: true
     })
 })
 const stripsFetchSuccess = (state, response) => state.merge({
-    stripsList: state.stripsList.merge({
-        stripsData: response,
+    fetchChemical: state.fetchChemical.merge({
+        fetchChemicalData: response,
         loading: false
     })
 })
 const stripsFetchFailure = (state) => state.merge({
-    stripsList: state.stripsList.merge({
-        stripsData: initialState.stripsData,
+    fetchChemical: state.fetchChemical.merge({
+        fetchChemicalData: initialState.fetchChemicalData,
         loading: false
     })
 })

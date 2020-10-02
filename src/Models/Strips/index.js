@@ -3,6 +3,6 @@ import { callApi } from '../../Services/index'
 
 export default class StripsModel {
    static getStripsList(requestBody=null) {
-      return callApi(Constant.METHOD_TYPE_GET, Constant.API_FETCH_VIDEO_LIST, requestBody)
+      return callApi(Constant.METHOD_TYPE_GET, Constant.API_FETCH_STRIPS_LIST, requestBody)
    }
 }

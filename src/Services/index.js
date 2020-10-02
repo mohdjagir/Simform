@@ -46,13 +46,23 @@ export async function callApi(methodType, apiUrl, requestBody) {
             const statusCode = response.status;
             console.log("statusCode", statusCode);
             const data = response.json();
+            console.log("data==",data)
             return Promise.all([statusCode, data]);
         })
             .then(([statusCode, data]) => {
                 console.log("data get=========", data);
-                const responseObj = {
-                    data: data,
-                    statusCode: statusCode
+                var responseObj;
+                if(data && data.length > 0){
+                    let newData={chemical:data}
+                        responseObj = {
+                        data: newData,
+                        statusCode: statusCode
+                    }
+                }else{
+                        responseObj = {
+                        data: data,
+                        statusCode: statusCode
+                    }
                 }
                 return responseObj;
             })
