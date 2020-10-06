@@ -55,20 +55,20 @@ const videoFetchFailure = (state) => state.merge({
         loading: false
     })
 })
-/***strips reducers */
-const stripsFetchStarted = (state) => state.merge({
+/***video fetch reducers */
+const chemicalFetchStarted = (state) => state.merge({
     fetchChemical: state.fetchChemical.merge({
         fetchChemicalData: initialState.fetchChemicalData,
         loading: true
     })
 })
-const stripsFetchSuccess = (state, response) => state.merge({
+const chemicalFetchSuccess = (state, response) => state.merge({
     fetchChemical: state.fetchChemical.merge({
         fetchChemicalData: response,
         loading: false
     })
 })
-const stripsFetchFailure = (state) => state.merge({
+const chemicalFetchFailure = (state) => state.merge({
     fetchChemical: state.fetchChemical.merge({
         fetchChemicalData: initialState.fetchChemicalData,
         loading: false
@@ -82,9 +82,9 @@ const appReducer = createReducer(initialState, {
     [ActionTypes.VIDEO_FETCH_STARTED]: videoFetchStarted,
     [ActionTypes.VIDEO_FETCH_SUCCESS]: videoFetchSuccess,
     [ActionTypes.VIDEO_FETCH_FAILURE]: videoFetchFailure,
-    [ActionTypes.STRIPS_FETCH_STARTED]: stripsFetchStarted,
-    [ActionTypes.STRIPS_FETCH_SUCCESS]: stripsFetchSuccess,
-    [ActionTypes.STRIPS_FETCH_FAILURE]: stripsFetchFailure,
+    [ActionTypes.STRIPS_FETCH_STARTED]: chemicalFetchStarted,
+    [ActionTypes.STRIPS_FETCH_SUCCESS]: chemicalFetchSuccess,
+    [ActionTypes.STRIPS_FETCH_FAILURE]: chemicalFetchFailure,
 
 })
 

@@ -155,7 +155,7 @@ class index extends React.Component {
   /****video fetch data */
   componentDidUpdate(prevProps) {
     console.log("componentDidUpdate====d",prevProps)
-    if (prevProps && this.props.videoData != this.props.videoData) {
+    if (prevProps.videoData != this.props.videoData && this.props.videoData ) {
       console.log("this.props.videoData", this.props.videoData)
     }
   }

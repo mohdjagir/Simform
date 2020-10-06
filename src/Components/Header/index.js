@@ -18,7 +18,7 @@ export const DashboardHeader = (props) => {
                         rounded
                         source={{
                             uri:
-                                props.imagePaths!=undefined ? props.imagePaths : 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+                                props.imagePaths != undefined ? props.imagePaths : 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
                         }}
                         size="medium"
                     />
@@ -32,12 +32,13 @@ export const StripHeader = (props) => {
     return (
         <View style={styles.stripHeader}>
             <TouchableOpacity onPress={() => alert("go back")} style={styles.childContainer1}>
-                <Icon type="FontAwesome" name="arrow-left" style={{ fontSize: 30, paddingTop: 10, color:'#fff' }} />
+                <Icon type="FontAwesome" name="arrow-left" style={{ fontSize: 30, paddingTop: 10, color: '#fff' }} />
             </TouchableOpacity>
             <View style={styles.childContainer2}>
-                <Button rounded style={{ alignSelf: 'flex-end', backgroundColor:'#fff', width:70 }}>
-                    <Text style={{padding:20,fontSize:13,color:'rgb(45,91,142)'}}>Next</Text>
+                <Button rounded style={{ alignSelf: 'flex-end', backgroundColor: '#fff', width: 70 }} onPress={() => props.clickOnNext()}>
+                    <Text style={{ padding: 20, fontSize: 13, color: 'rgb(45,91,142)' }}>Next</Text>
                 </Button>
+                
             </View>
         </View>
     )

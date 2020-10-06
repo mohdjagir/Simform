@@ -3,24 +3,24 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  ScrollView,
   FlatList
 } from 'react-native'
 
 import { Icon, View } from 'native-base';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StripHeader } from '../../Components/Header/index';
 import { stripsFetchRequest } from '../../Actions/index';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { ScrollView } from 'react-native-gesture-handler';
+import {TouchableOpacity } from 'react-native-gesture-handler';
 
 class index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      inputField: {values: [0]},
-      chemicalData:[{"id":"1","name":"Total Hardness","unit":"ppm","values":[{"color":"rgb(45,91,142)","value":"0"},{"color":"rgb(89,100,146)","value":"110"},{"color":"rgb(97,88,138)","value":"250"},{"color":"rgb(118,75,119)","value":"500"},{"color":"rgb(152,81,130)","value":"1000"}]},{"id":"2","name":"Total Chlorine","unit":"ppm","values":[{"color":"rgb(255,240,108)","value":"0"},{"color":"rgb(245,248,127)","value":"1"},{"color":"rgb(223,235,111)","value":"3"},{"color":"rgb(166,203,158)","value":"5"},{"color":"rgb(134,192,154)","value":"10"}]},{"id":"3","name":"Free Chlorine","unit":"ppm","values":[{"color":"rgb(254,240,156)","value":"0"},{"color":"rgb(230,217,201)","value":"1"},{"color":"rgb(177,146,184)","value":"3"},{"color":"rgb(150,103,159)","value":"5"},{"color":"rgb(119,62,129)","value":"10"}]},{"id":"4","name":"pH","unit":"ppm","values":[{"color":"rgb(211,145,75)","value":"6.2"},{"color":"rgb(236,119,62)","value":"6.8"},{"color":"rgb(208,85,42)","value":"7.2"},{"color":"rgb(206,82,74)","value":"7.8"},{"color":"rgb(214,50,71)","value":"8.4"}]},{"id":"5","name":"Total Alkalinity","unit":"ppm","values":[{"color":"rgb(210,158,74)","value":"0"},{"color":"rgb(159,150,79)","value":"40"},{"color":"rgb(104,129,111)","value":"120"},{"color":"rgb(54,112,103)","value":"180"},{"color":"rgb(53,106,115)","value":"240"}]},{"id":"6","name":"Cyanuric Acid","unit":"ppm","values":[{"color":"rgb(197,137,68)","value":"0"},{"color":"rgb(191,104,46)","value":"50"},{"color":"rgb(175,69,77)","value":"100"},{"color":"rgb(144,39,92)","value":"150"},{"color":"rgb(132,46,119)","value":"300"}]}]
+      inputField: [],
+      chemicalData: []
     }
   }
 
@@ -34,47 +34,78 @@ class index extends React.Component {
 
   /****strip fetch data */
   componentDidUpdate(prevProps) {
-    if (prevProps && this.props.stripsFetchData != this.props.stripsFetchData) {
-      console.log("this.props.stripsData", this.props.stripsFetchData)
+    if (prevProps.fetchChemicalData !==this.props.fetchChemicalData && this.props.fetchChemicalData) {
+      console.log("this.props.stripsData", this.props.fetchChemicalData)
+      let dynamicInputFieldData=[]
+      console.log("this.props.fetchChemicalData.response.chemical.length",this.props.fetchChemicalData.response.chemical.length)
+      if(this.props.fetchChemicalData.response){
+        for (i=0; i<this.props.fetchChemicalData.response.chemical.length; i++){
+          dynamicInputFieldData.push({id:this.props.fetchChemicalData.response.chemical[i].id,value:this.props.fetchChemicalData.response.chemical[i].values[0].value,color:this.props.fetchChemicalData.response.chemical[i].values[0].color})
+      }
+        console.log("dynamicInputFieldData",dynamicInputFieldData)
+        this.setState({inputField:dynamicInputFieldData,chemicalData:this.props.fetchChemicalData.response.chemical})
+      }
+
     }
   }
 
   /***calling api  */
 
-  componentDidMount(){
+  componentDidMount() {
     this.props.stripsFetchRequest()
   }
 
 
   /**change input field value */
   // handle input change
-  handleInputChange = (e, index) => {
-    let values = [...this.state.inputField.values];
-     values[index] = e.target.value;
-     this.setState({ values:values });
+  handleInputChange = (valueData, id) => {
+    console.log("id====",id)
+    let data = [...this.state.inputField];
+    let findDataIndex=data.findIndex((data)=>data.id==id)
+    console.log("findDataIndex",findDataIndex)
+    if(findDataIndex!=-1){
+        data[findDataIndex].value=valueData
+    }
+    this.setState({ inputField: data })
   };
   /*** */
 
+  onColorPress = (id, value,color) => {
+    console.log("index", index)
+    console.log("value", value)
+    let data = [...this.state.inputField];
+    let findData = data.findIndex((obj) => obj.id == id)
+    console.log("findData", findData)
+    if (findData != -1) {
+      data[findData].value = value
+      data[findData].color = color
+    } 
+    this.setState({ inputField: data })
+  }
+
   /***render color plate value */
-    colorPlateFun=(data)=>{
-      let styleValue=30
-      return data.map((value,index)=>{
-        return(
-          <>
-          <View style={{ marginLeft: 10, position: 'relative', marginTop: 10, width: '19%', height: 40, marginLeft: 5, backgroundColor: value.color }}>
-            </View>
-        <Text style={{ top: 60, position: 'absolute', left: index==0?styleValue:styleValue+=70}}>{value.value}</Text>
-          </>  
-        );
-      })
-    }
+  colorPlateFun = (id, data) => {
+    let styleValue = 30
+    return data.map((value, index) => {
+      return (
+        <>
+          <TouchableOpacity style={{ marginLeft: 10, width: 63, position: 'relative', marginTop: 10, height: 40, marginLeft: 5, backgroundColor: value.color }} onPress={() => this.onColorPress(id, value.value,value.color)}>
+          </TouchableOpacity>
+          <Text style={{ top: 60, position: 'absolute', left: index == 0 ? styleValue : styleValue += 70 }}>{value.value}</Text>
+        </>
+      );
+    })
+  }
   /*** */
 
   /***render chemical data */
   renderChemicaldata = (item) => {
-    return item.map((data,index) => {
+    console.log("data.length", item.length)
+    return item.map((data, index) => {
+      console.log("index====", data)
+      console.log("index=index==index=", index)
       return (
-        <>
+        <View key={index} style={{ flex:1, width: '100%' }}>
           <View style={{ flexDirection: 'row', width: '100%' }}>
             <View style={{ alignItems: 'flex-start', marginTop: 10, width: '80%' }}>
               <Text style={{ fontSize: 18, fontWeight: '900' }}>{data.name}({data.unit})</Text>
@@ -88,38 +119,62 @@ class index extends React.Component {
                   borderRadius: 10
                 }}
                 name="value"
-                placeholder='0'
                 keyboardType="number-pad"
-                value={this.state.inputField.values[index]}
+                value={this.state.inputField.length > 0 && this.state.inputField[index].id == data.id ? this.state.inputField[index].value : '0'}
                 underlineColorAndroid='transparent'
-                onChange={e => this.handleInputChange(e, index)}
+                onChangeText={value => this.handleInputChange(value, data.id)}
               />
             </View>
           </View>
-          <View key={index} style={{ flexDirection: 'row', width: '100%', marginBottom: 30 }}>
-            {this.colorPlateFun(data.values)}
+          <View style={{ flexDirection: 'row', width: '100%', marginBottom: 30 }}>
+            {this.colorPlateFun(data.id, data.values)}
           </View>
-        </>
+        </View>
       );
     });
   };
   /*** */
+
+  /***left side color */
+    leftSideColor=(data)=>{
+        return data.map((data,index)=>{
+            return(
+              <View style={{ marginTop: index==0?42:81,width: 50, height: 40, backgroundColor: data.color }}>
+              </View>
+             )           
+        })
+    }
+
+  /*** end left side color */
+
+  /***click to show selected value */
+  clickOnNextFunc=()=>{
+    alert(JSON.stringify(this.state.inputField))
+  }
+
+  /*** */
+
   render() {
-    const { stripData } = this.props;
-    const stripDataValue=this.props.stripData?this.props.stripData.response:null
-    console.log("stripDataValue",stripDataValue)
+    const selectedDataColor=this.state.inputField
+    let stripData;
+    if (this.props.fetchChemicalData) {
+      console.log("this.props.data", this.props.fetchChemicalData)
+      stripData = this.props.fetchChemicalData.response.chemical
+    }
     return (
       <>
-        <StripHeader />
+        <StripHeader clickOnNext={()=>this.clickOnNextFunc()}/>
+        <ScrollView>
         <View style={styles.container} >
           <View style={{ flexDirection: 'column', borderWidth: 1, margin: 5, padding: 0 }}>
-            <View style={{ marginTop: 40, width: 50, height: 40, backgroundColor: 'red' }}>
-            </View>
+            {this.leftSideColor(selectedDataColor)}
           </View>
           <View style={{ flexDirection: 'column', width: '80%' }}>
-            {this.renderChemicaldata(this.state.chemicalData)}
+            {stripData ? this.renderChemicaldata(stripData) : null}
           </View>
+          <Spinner cancelable={true} visible={this.props.loading} color={"rgb(45,91,142)"} textContent={"Loading.."} />
         </View>
+        </ScrollView>
       </>
     )
   }

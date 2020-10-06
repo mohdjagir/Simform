@@ -3,7 +3,7 @@ import * as ActionTypes from '../Utils/Types';
 import * as Actions from '../Actions/index';
 import { showMessage } from '../Utils/Alert';
 import VideoModel from '../Models/Video';
-import StripsModel from '../Models/Strips';
+import ChemicalModel from '../Models/Strips';
 import userLoginModel from '../Models/Login';
 
 export function* userLoginFun(action) {
@@ -37,10 +37,11 @@ export function* fetchVideoFunc() {
     }
 
 }
-export function* fetchStipsFunc() {
+
+export function* fetchChemicalFunc() {
     yield put(Actions.stripsFetchStarted());
-    const responseObj = yield StripsModel.getStripsList();
-    if (responseObj.statusCode === 200 || responseObj.statusCode === 201) {
+    const responseObj = yield ChemicalModel.getChemicalList();
+    if (responseObj.statusCode === 200 || responseObj.statusCode == 201) {
         yield put(Actions.stripsFetchSuccess(responseObj.data));
     } else {
         if (responseObj.data && responseObj.data.message) {
@@ -56,7 +57,7 @@ export function* fetchStipsFunc() {
 export function* actionWatcher() {
     yield takeLatest(ActionTypes.USER_LOGIN_REQUEST, userLoginFun)
     yield takeLatest(ActionTypes.VIDEO_FETCH_REQUEST, fetchVideoFunc)
-    yield takeLatest(ActionTypes.STRIPS_FETCH_REQUEST, fetchStipsFunc)
+    yield takeLatest(ActionTypes.STRIPS_FETCH_REQUEST, fetchChemicalFunc)
 }
 export default function* rootSaga() {
     yield all([
